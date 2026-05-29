@@ -10,7 +10,7 @@ This project is based on the WESAD dataset, which contains wearable sensor data 
 The dataset includes physiological signals such as ECG, EDA, respiration, temperature, and accelerometer data.
 For this assignment, the focus is mainly on ECG-based analysis and HRV-related features.
 The link to dataset is :https://archive.ics.uci.edu/dataset/465/wesad+wearable+stress+and+affect+detection #(Due to large size of the dataset and limitation of the 
-github the dataset is not directly uploaded here. However, it can be easily obtained via link 
+github the dataset is not directly uploaded here. However, it can be easily obtained via link provided herein.
 
 # How to Run the Project
 
