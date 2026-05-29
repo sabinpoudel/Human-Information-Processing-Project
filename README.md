@@ -108,7 +108,7 @@ The mean heart rate plot shows a clear increase from baseline to stress for most
 
 This indicates that heart rate rises during the stress condition. Physiologically, this pattern is consistent with sympathetic nervous system activation during stress. When stress increases, cardiovascular activity also increases, leading to faster heartbeats.
 
-**Conclusion:** Stress increases heart rate.
+Takeaway: Stress increases heart rate.
 
 ---
 
@@ -118,7 +118,7 @@ The mean NN interval plot shows that most subjects have lower NN intervals durin
 
 NN interval represents the time between consecutive normal heartbeats. A decrease in NN interval means that the time between heartbeats becomes shorter. This is consistent with the observed increase in heart rate.
 
-**Conclusion:** Stress shortens the time between heartbeats.
+Takeaway:Stress shortens the time between heartbeats.
 
 ---
 
@@ -128,7 +128,7 @@ The SDNN plot shows mixed subject-level changes between baseline and stress.
 
 Some subjects show a decrease, while others show little change or an increase. SDNN reflects overall variability in normal-to-normal heartbeat intervals. Because the direction of change is not consistent across subjects, this plot does not show a clear stress-related pattern.
 
-**Conclusion:** SDNN does not show a consistent stress effect in this notebook.
+Takeaway: SDNN does not show a consistent stress effect in this notebook.
 
 ---
 
@@ -140,7 +140,7 @@ Some subjects show lower RMSSD during stress, while others remain similar or inc
 
 Although stress may reduce parasympathetic activity, the pattern here is not consistent enough across subjects to support a reliable decrease.
 
-**Conclusion:** RMSSD does not show a statistically reliable stress-related decrease in this analysis.
+Takeaway: RMSSD does not show a statistically reliable stress-related decrease in this analysis.
 
 ---
 
@@ -152,7 +152,7 @@ pNN50 measures the percentage of adjacent NN intervals differing by more than 50
 
 However, because the decrease is not consistent across all subjects and the Wilcoxon p-value is borderline, this should be interpreted as a possible reduction rather than a strong confirmed effect.
 
-**Conclusion:** pNN50 shows a likely stress-related reduction, but the evidence is borderline.
+Takeaway: pNN50 shows a likely stress-related reduction, but the evidence is borderline.
 
 ---
 
@@ -164,7 +164,7 @@ The x-axis represents epoch, and the y-axis represents loss. The curve decreases
 
 A smooth decrease in loss suggests that optimization is numerically stable. There is no clear evidence of unstable training, divergence, or strong oscillation.
 
-**Conclusion:** The logistic-regression model is learning, and training is numerically stable.
+Takeaway: The logistic-regression model is learning, and training is numerically stable.
 
 ---
 
@@ -178,7 +178,7 @@ The first principal component explains 75.7% of the variance, while the second p
 
 The plot shows partial separation between baseline and stress, suggesting that HRV features contain condition-related structure. However, overlap remains between the two groups, meaning that baseline and stress are not perfectly separable using these features alone.
 
-**Conclusion:** HRV features contain stress-related structure, but baseline and stress still overlap.
+Takeaway: HRV features contain stress-related structure, but baseline and stress still overlap.
 
 ---
 
@@ -192,7 +192,7 @@ Some local regions appear enriched for one condition, suggesting that certain HR
 
 However, t-SNE should not be overinterpreted because it can create apparent clusters depending on parameter settings and local neighborhood structure.
 
-**Conclusion:** Some local clusters are condition-enriched, but the plot should be interpreted cautiously.
+Takeaway: Some local clusters are condition-enriched, but the plot should be interpreted cautiously.
 
 ---
 
@@ -206,7 +206,7 @@ The plot shows some separation between baseline and stress points, suggesting th
 
 This overlap indicates that HRV features do not perfectly distinguish stress from baseline, likely because of individual differences and physiological variability.
 
-**Conclusion:** Some condition separation exists, but HRV features do not perfectly separate stress from baseline.
+Takeaway: Some condition separation exists, but HRV features do not perfectly separate stress from baseline.
 
 ---
 
@@ -220,7 +220,7 @@ Stress windows generally receive higher predicted stress probabilities than base
 
 However, there is overlap between the baseline and stress distributions. Some baseline windows receive relatively high stress probabilities, and some stress windows receive lower probabilities.
 
-**Conclusion:** Stress windows generally receive higher stress probabilities, but the classifier is not perfect.
+Takeaway: Stress windows generally receive higher stress probabilities, but the classifier is not perfect.
 
 ---
 
@@ -231,6 +231,12 @@ The plots provide visual support for the stress hypothesis. The strongest and mo
 Some HRV variability measures, such as pNN50, suggest a possible reduction during stress, but the evidence is weaker and less consistent. SDNN and RMSSD show mixed subject-level responses and do not demonstrate a clear stress effect.
 
 The PCA, t-SNE, UMAP, and JAX stress score plots show that HRV features contain condition-related information. However, overlap between baseline and stress remains, indicating that HRV-based stress detection is informative but not perfectly separable.
+---
+
+## References 
+
+
+
 
 
 
