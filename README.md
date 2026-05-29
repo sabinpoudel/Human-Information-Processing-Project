@@ -229,8 +229,3 @@ The PCA, t-SNE, UMAP, and JAX stress score plots show that HRV features contain 
 
 
 
-
-
-
-
-Depending on the notebook code, additional libraries may be required.
