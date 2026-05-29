@@ -86,9 +86,9 @@ The main objectives of this assignment are:
 5) To visualize signal patterns and results.
 6) To understand the relationship between physiological signals and human information processing.
 
-# Elaboration of above models visualization(figures) in details:
+# Discussion of the results obtained in details:
 
-
+### note: Please download HIP ipynb file to visualize the figure
 ## HRV Paired Plots
 
 The HRV paired plots compare each subject’s baseline and stress values for the selected HRV metrics. Each thin line represents one subject and shows the direction of change from baseline to stress.
