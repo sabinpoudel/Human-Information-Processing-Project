@@ -231,11 +231,13 @@ The plots provide visual support for the stress hypothesis. The strongest and mo
 Some HRV variability measures, such as pNN50, suggest a possible reduction during stress, but the evidence is weaker and less consistent. SDNN and RMSSD show mixed subject-level responses and do not demonstrate a clear stress effect.
 
 The PCA, t-SNE, UMAP, and JAX stress score plots show that HRV features contain condition-related information. However, overlap between baseline and stress remains, indicating that HRV-based stress detection is informative but not perfectly separable.
+
+
 ---
 
 ## References 
-
-
+1. Schmidt, P., Reiss, A., Duerichen, R., Marberger, C., & Van Laerhoven, K. (2018). *Introducing WESAD, a multimodal dataset for wearable stress and affect detection*. Proceedings of the 20th ACM International Conference on Multimodal Interaction, 400–408.
+2. Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). *Heart rate variability: Standards of measurement, physiological interpretation and clinical use*. Circulation, 93(5), 1043–1065.
 
 
 
