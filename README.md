@@ -27,7 +27,6 @@ Requirements
 
 Install the required Python libraries before running the notebook:
 
-pip install numpy pandas matplotlib scipy jupyter
 
 
 
