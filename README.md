@@ -166,6 +166,9 @@ After filtering, the ECG waveform appears cleaner and more centered around the b
 
 ## R-Peak Detection Check
 
+<img width="3567" height="1164" alt="S2_stress_rpeaks" src="https://github.com/user-attachments/assets/a0a04f25-b7c0-4e66-b6fb-94dfdf1db34e" />
+
+
 This R-peak detection check shows the cleaned ECG signal with the detected R-peaks marked as circular points. The continuous waveform represents the cleaned ECG, while each marker identifies a heartbeat location selected by the detection algorithm.
 
 This plot is important because R-peak detection is the foundation of the entire HRV workflow. HRV features are not calculated directly from the ECG waveform itself; they are derived from the timing differences between consecutive detected R-peaks. Therefore, the quality of R-peak detection directly determines the reliability of the NN intervals and all later HRV metrics.
