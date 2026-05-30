@@ -42,16 +42,34 @@ Install the required Python libraries before running the notebook:
 #### Sabin, Student ID: 113034860, Course : Human Information Processing 
 
 
-This project investigates whether ECG-derived heart rate variability can distinguish baseline and stress states during human information processing. Stressful cognitive and emotional conditions activate the autonomic nervous system, especially sympathetic activity, while often reducing parasympathetic or vagal regulation. These autonomic changes are reflected in the timing between heartbeats. Therefore, ECG-derived heart rate variability provides a useful physiological index for studying autonomic reactions to stress.
 
-This project built a complete ECG: HRV stress-analysis workflow in two environments. Firtly, WESAD chest ECG was extracted and converted to per-condition to CSV files in this jupyter notebook. As well as filtered, visually checked and R-peaks were detected. Furthermore, HRV windows were computed, group statistics were run, and a simple JAX classifier. Correspondigly,the working NeuroPype implementation mirrors that logic in two forms: an offline importCSV pipeline for reproducible batch processing and export. The key practical lesson is that NeuroPype ImportCSV produces an offline single-packet recording due to which TimeSeriesPlot is often blank unless the data is streamed; the docs state TimeSeriesPlot is intended for continuous streaming data, while ScrollPlot /offline viewers are for prerecorded review. SpectrumPlot also requires a frequency-axis spectrum, so it must be preceded by a spectral estimation node such as Spectrogram or WelchSpectrum . HeartRate and HeartRateVariability must consume the RDetection output stream ending in -peaks. 
+## Introduction
 
+This project investigates whether ECG-derived heart rate variability (HRV) can differentiate between baseline and stress states during human information processing. When individuals are exposed to cognitively demanding or emotionally stressful conditions, the autonomic nervous system adjusts rapidly to support attention, decision-making, and coping demands. This adjustment is typically marked by increased sympathetic activation and reduced parasympathetic, or vagal, regulation.
 
-The project uses the WESAD dataset, a public wearable physiology dataset designed for stress and affect detection. The main signal used in this project is chest ECG recorded from the RespiBAN device at 700 Hz. The analysis compares baseline and stress segments. The core hypothesis is that stress will increase heart rate and reduce HRV compared with baseline. Specifically, stress is expected to reduce time-domain HRV metrics such as SDNN, RMSSD, SDSD, NN50, and pNN50.
+These changes do not appear only as a general increase in arousal; they are also expressed in the fine timing patterns between consecutive heartbeats. Under baseline conditions, heart rhythms usually show greater variability, reflecting flexible parasympathetic regulation and adaptive physiological balance. During stress, however, this variability often becomes more constrained, suggesting a shift toward sympathetic dominance and reduced autonomic flexibility.
 
-The project includes both offline and pipeline-based analysis. In Jupyter Notebook(herein), the ECG is extracted, filtered, visually inspected, artifact-marked, and converted into HRV features. Figures are generated, including raw and filtered ECG time-series plots, PSD before/after filtering, artifact-marked ECG, R-peak visualization, paired baseline-vs-stress HRV plots, and latent-space visualizations using PCA, t-SNE, and UMAP. A simple JAX logistic-regression model is also used to test whether extracted HRV features contain stress-relevant information.
+By analyzing ECG-derived HRV, this project aims to infer how the body’s regulatory systems respond to different information-processing demands. In this sense, HRV serves not merely as a cardiac measurement, but as a physiological window into the interaction between cognitive load, emotional stress, and autonomic control
 
-Finally, the preprocessed ECG is streamed into NeuroPype using Lab Streaming Layer. The NeuroPype pipeline demonstrates signal input, filtering, R-peak detection, heart-rate extraction, HRV feature extraction, and final computational output. 
+This project developed a complete ECG–HRV stress-analysis workflow across two complementary environments: a Jupyter-based analytical pipeline and a NeuroPype-based signal-processing implementation. In the Jupyter notebook, chest ECG data from the WESAD dataset were extracted and reorganized into condition-specific CSV files(Please check HIP.ipynb file for it), allowing baseline and stress recordings to be processed separately. The ECG signals were then filtered, visually inspected for quality, and analyzed through R-peak detection. From these detected heartbeat intervals, HRV features were computed over defined time windows, followed by group-level statistical analysis and the implementation of a simple JAX-based classifier.
+
+This workflow supports the inference that stress-related changes in autonomic regulation can be observed not only in raw ECG morphology but also in the variability patterns derived from consecutive R-peaks. By comparing HRV windows across experimental conditions, the pipeline provides a structured way to examine whether baseline and stress states produce separable physiological signatures.
+
+The NeuroPype implementation was designed to mirror the same logic in a more modular signal-processing environment. An important implementation insight concerns frequency-domain visualization. SpectrumPlot does not operate directly on raw ECG or HRV time-series data; it requires frequency-axis spectral input. Therefore, it must be preceded by a spectral estimation node such as Spectrogram or WelchSpectrum. Similarly, HeartRate and HeartRateVariability nodes must receive the output stream from RDetection, specifically the stream ending in -peaks, because HR and HRV calculations depend on detected R-peak timing rather than the raw ECG waveform itself.
+
+Overall, the project demonstrates both the analytical and practical requirements of ECG-based HRV stress analysis. The Jupyter workflow provides transparent feature extraction, statistical comparison, and classification, while the NeuroPype workflow translates the same reasoning into a reusable signal-processing pipeline. Together, these implementations show how ECG-derived R-peak timing can be transformed into interpretable HRV measures for distinguishing physiological responses during baseline and stress-related information processing.
+
+The project uses the WESAD dataset, a publicly available wearable physiology dataset developed for stress and affect detection. The primary physiological signal analyzed in this work is chest ECG recorded from the RespiBAN device at 700 Hz, which provides high-resolution cardiac timing information suitable for heart rate and HRV analysis. The study focuses on comparing baseline and stress segments in order to examine whether autonomic changes during stress can be detected through ECG-derived HRV.
+
+The central hypothesis is that stress will produce a measurable shift in cardiac regulation compared with baseline. Under stress, increased sympathetic activation is expected to elevate heart rate, while reduced parasympathetic or vagal activity is expected to decrease HRV. Therefore, stress is expected to reduce time-domain HRV metrics such as SDNN, RMSSD, SDSD, NN50, and pNN50. These reductions would suggest that the heartbeat intervals become less variable and less flexible during stress, indicating a move toward sympathetic dominance and reduced autonomic adaptability.
+
+Methodologically, the project combines offline analysis with a pipeline-based implementation. In the Jupyter Notebook, chest ECG is extracted from WESAD, separated into baseline and stress conditions, filtered to reduce noise, visually inspected for signal quality, and marked for artifacts where necessary. R-peaks are then detected from the cleaned ECG signal, allowing inter-beat intervals to be calculated and transformed into HRV features. This step is important because the project does not treat ECG only as a waveform; instead, it uses ECG as a source for inferring autonomic regulation through heartbeat timing.
+
+Several visual and analytical outputs are generated to support interpretation. These include raw and filtered ECG time-series plots, power spectral density plots before and after filtering, artifact-marked ECG visualizations, R-peak detection plots, paired baseline-versus-stress HRV comparisons, and latent-space visualizations using PCA, t-SNE, and UMAP. Together, these figures make the analysis more illustrative by showing how the signal changes across preprocessing stages and whether baseline and stress samples form separable patterns in feature space.
+
+A simple JAX logistic-regression classifier is also implemented to test whether the extracted HRV features contain stress-relevant information. Rather than serving as a complex predictive model, this classifier functions as an inferential check: if the model can distinguish baseline from stress above chance level, it suggests that the HRV features preserve physiologically meaningful differences between conditions.
+
+Finally, the project extends the analysis into NeuroPype by streaming the preprocessed ECG through Lab Streaming Layer. The NeuroPype pipeline demonstrates the practical translation of the offline workflow into a modular signal-processing environment. It includes signal input, filtering, R-peak detection, heart-rate extraction, HRV feature extraction, and final computational output. This pipeline-based implementation shows that the same ECG-to-HRV reasoning can be reproduced beyond the notebook, supporting both offline analysis and future real-time physiological monitoring applications.
 
 
 ## Workflow
@@ -95,78 +113,202 @@ The main objectives of this assignment are:
 
 # Discussion of the results obtained in details:
 
-### note: Please download HIP ipynb file to visualize the figure
+## Raw ECG Visual Inspection Plot
+
+<img width="3600" height="1200" alt="S2_stress_raw_ecg" src="https://github.com/user-attachments/assets/7af9b1fd-6bf2-41f7-8525-a136fedfde95" />
+
+
+This raw ECG visual inspection plot shows the unfiltered ECG signal for subject **S2 during the stress condition**. The x-axis represents time in seconds, while the y-axis represents ECG amplitude. The repeated sharp upward deflections correspond to cardiac R-peaks, which are the main reference points used later for heartbeat interval and HRV calculation.
+
+Visual inspection is an important early quality-control step because it allows the signal to be evaluated before automated preprocessing and feature extraction. In this segment, the R-peaks are clearly visible across the recording, suggesting that the ECG contains usable cardiac information. However, the waveform also shows baseline fluctuation, amplitude variation, and smaller irregular components between the main peaks. These features may reflect movement, muscle activity, electrode contact changes, or other noise sources during the stress condition.
+
+The plot therefore supports two important inferences. First, the signal is sufficiently structured for R-peak detection because the main heartbeat peaks are identifiable. Second, the presence of drift and irregular fluctuations indicates that filtering and artifact handling are necessary before HRV features are extracted. Without these preprocessing steps, noise could shift detected peak locations or introduce false peaks, leading to inaccurate NN intervals.
+
+This figure helps justify the preprocessing pipeline used in the notebook. It shows why raw ECG should not be used directly for HRV analysis, even when the cardiac rhythm is visible. Instead, visual inspection confirms that the signal is usable but requires cleaning to improve the reliability of R-peak detection and downstream stress-related HRV interpretation.
+
+**Takeaway:** The raw ECG contains clear heartbeat structure, but visible drift and noise justify filtering and artifact control before HRV analysis.
+
+
+
+
+
+<img width="1766" height="1464" alt="mean_hr_bpm_baseline_vs_stress" src="https://github.com/user-attachments/assets/b52afdb0-8838-4421-b39f-378e1dacc442" />
+
+## Artifact-Marked ECG Plot
+
+<img width="3567" height="1164" alt="S2_stress_marked_artifacts" src="https://github.com/user-attachments/assets/88acde0b-7200-454d-aa12-5964d99a638e" />
+
+
+This artifact-marked ECG plot shows a filtered ECG segment from subject **S2 during the stress condition**, with suspected artifact points highlighted on top of the waveform. The blue ECG trace represents the filtered cardiac signal, while the marked points indicate samples that were identified as potential artifacts or abnormal signal regions.
+
+The purpose of this plot is to visually confirm whether artifact detection is occurring in physiologically plausible locations. In ECG preprocessing, artifacts can arise from movement, electrode contact issues, abrupt amplitude shifts, or non-cardiac noise. If these noisy regions are not identified, they can distort R-peak detection and produce inaccurate NN intervals, which would directly affect HRV metrics.
+
+In this segment, the artifact markers appear around high-amplitude peaks and irregular waveform sections. This suggests that the artifact-marking step is flagging parts of the signal that may influence heartbeat detection or interval estimation. Because HRV analysis depends on precise timing between consecutive normal beats, marking these segments helps protect the later feature extraction stage from contaminated data.
+
+This figure is therefore an important quality-control step. It shows that the pipeline is not only extracting HRV features automatically, but also checking whether the ECG signal contains regions that may reduce confidence in the derived measurements. The presence of marked artifacts indicates that stress-condition ECG data may contain noise or irregular segments that should be handled carefully before interpreting HRV results.
+
+**Takeaway:** Artifact marking helps identify potentially unreliable ECG regions, improving confidence in later R-peak detection and HRV feature extraction.
+
+---
+
+## Raw vs Filtered ECG Plot
+
+<img width="3567" height="1844" alt="S2_stress_raw_vs_filtered" src="https://github.com/user-attachments/assets/c628fee8-fe5d-4502-87ee-844dfd4e8f6a" />
+
+
+This figure compares the **raw ECG** and **filtered ECG** signal for subject **S2 during the stress condition**. The top panel shows the original ECG waveform before filtering, while the bottom panel shows the same segment after filtering has been applied.
+
+In the raw ECG plot, the main cardiac peaks are visible, but the signal also contains baseline fluctuation and smaller noise components. These unwanted variations can make the ECG less stable and may interfere with accurate R-peak detection. Since HRV analysis depends on precise timing between consecutive R-peaks, even small distortions in the ECG signal can affect the reliability of the extracted NN intervals.
+
+After filtering, the ECG waveform appears cleaner and more centered around the baseline. The sharp R-peaks remain clearly visible, while some slower drift and background noise are reduced. This suggests that the filtering step improves signal quality without removing the key cardiac information needed for heartbeat detection.
+
+The comparison is important because it visually demonstrates that preprocessing is not simply a technical step; it directly supports the physiological inference made later in the analysis. A cleaner ECG signal allows more reliable R-peak detection, which leads to more accurate HRV features. Therefore, this plot provides evidence that the pipeline is preparing the ECG signal appropriately before extracting stress-related cardiac measures.
+
+**Takeaway:** Filtering improves ECG signal quality by reducing noise and baseline fluctuation while preserving the R-peaks needed for HRV analysis.
+
+---
+
+
+## PSD Before and After Filtering Plot
+
+<img width="2964" height="1464" alt="S2_stress_psd_before_after" src="https://github.com/user-attachments/assets/b76c2758-e2b0-4bf7-9b24-ba9dd07f97b1" />
+
+
+This figure shows the **power spectral density (PSD) before and after filtering** for subject **S2 during the stress condition**. The x-axis represents frequency in Hz, while the y-axis shows power spectral density on a logarithmic scale. This allows the plot to show both large and very small power differences across the frequency range.
+
+The raw ECG PSD shows that the original signal contains power across a broad range of frequencies, including higher-frequency components that may reflect noise, muscle activity, movement artifacts, or other non-cardiac signal contamination. These components can interfere with clean ECG interpretation and may reduce the reliability of later R-peak detection.
+
+After filtering, the PSD changes substantially. The filtered ECG retains the lower-frequency signal components that are most relevant for the ECG waveform, while power is strongly reduced at higher frequencies. This indicates that the filter is suppressing unwanted frequency content rather than simply changing the signal visually in the time domain.
+
+The drop in the filtered PSD at higher frequencies provides frequency-domain evidence that preprocessing is working as intended. In other words, the filtering step reduces noise while preserving the main cardiac rhythm information needed for heartbeat detection. This strengthens confidence that the subsequent R-peak detection and HRV feature extraction are based on a cleaner physiological signal.
+
+The notch-like reduction around the mid-frequency range also suggests targeted attenuation of specific frequency content, likely related to line noise or filter behavior. This is important because concentrated noise at specific frequencies can distort ECG morphology and affect automated detection algorithms.
+
+**Takeaway:** Filtering successfully reduces unwanted spectral power, especially at higher frequencies, while preserving ECG-relevant information for reliable R-peak detection and HRV analysis.
+
+
+
+
+
 ## HRV Paired Plots
 
-The HRV paired plots compare each subject’s baseline and stress values for the selected HRV metrics. Each thin line represents one subject and shows the direction of change from baseline to stress.
+The HRV paired plots above compare each subject’s baseline and stress values across selected HRV metrics. In these plots, each thin line represents one participant and traces that participant’s physiological shift from the baseline condition to the stress condition.
 
-This paired visualization is useful because it shows within-subject physiological changes rather than only comparing group averages. The thick black line represents the group mean trend and summarizes the overall direction of change across subjects.
+This visualization is especially informative because it emphasizes within-subject change rather than relying only on group-level averages. Since HRV can vary substantially between individuals, paired plots help control for individual differences by showing how each participant changes relative to their own baseline.
+
+The direction and steepness of each line provide an immediate visual inference. A downward line from baseline to stress suggests a reduction in HRV during stress, which is consistent with reduced parasympathetic regulation and increased autonomic strain. An upward or flat line may indicate individual variability, weaker stress response, noise, or possible artifact influence.
+
+The thick black line represents the group mean trend, summarizing the overall direction of change across all subjects. If this mean line decreases from baseline to stress, it supports the project hypothesis that stress reduces HRV compared with baseline. Therefore, the paired plots do more than display values; they visually indicate whether stress produces a consistent physiological shift across participants.
 
 ---
 
 ## Mean Heart Rate Plot
 
-The mean heart rate plot shows a clear increase from baseline to stress for most subjects.
+<img width="1766" height="1464" alt="mean_nn_ms_baseline_vs_stress" src="https://github.com/user-attachments/assets/8b815bf0-8d60-4bab-a4cd-392a3ee18496" />
 
-This indicates that heart rate rises during the stress condition. Physiologically, this pattern is consistent with sympathetic nervous system activation during stress. When stress increases, cardiovascular activity also increases, leading to faster heartbeats.
+The mean heart rate paired plot shows a clear increase from baseline to stress for most subjects. Each subject’s line generally slopes upward, indicating that heart rate becomes faster during the stress condition compared with that individual’s own resting or baseline state.
 
-Takeaway: Stress increases heart rate.
+This pattern supports the inference that the stress task produced a measurable cardiovascular response. Physiologically, stress activates the sympathetic branch of the autonomic nervous system, which prepares the body for increased cognitive and emotional demand. As sympathetic drive increases, cardiac activity accelerates, resulting in shorter intervals between heartbeats and a higher mean heart rate.
+
+The consistency of the upward trend across subjects suggests that the heart rate response is not only a group-level effect but also a repeated within-subject pattern. Although some individual variation may remain, the overall direction of change indicates that stress reliably increases cardiovascular arousal.
+
+Takeaway: Stress increases heart rate, reflecting heightened sympathetic activation during the stress condition.
 
 ---
 
 ## Mean NN Interval Plot
 
-The mean NN interval plot shows that most subjects have lower NN intervals during stress compared with baseline.
+<img width="1766" height="1464" alt="pnn50_pct_baseline_vs_stress" src="https://github.com/user-attachments/assets/1a93996a-ae74-4bc7-8d47-5434524d8fff" />
 
-NN interval represents the time between consecutive normal heartbeats. A decrease in NN interval means that the time between heartbeats becomes shorter. This is consistent with the observed increase in heart rate.
+The mean NN interval paired plot shows that most subjects have lower NN intervals during stress compared with baseline. Since each line represents the change within the same subject, the downward trend indicates that the time between consecutive normal heartbeats becomes shorter during the stress condition.
 
-Takeaway:Stress shortens the time between heartbeats.
+NN interval refers to the time gap between two consecutive normal R-peaks in the ECG signal. When NN intervals decrease, the heart is beating more frequently because there is less time between beats. This pattern is therefore directly consistent with the observed increase in mean heart rate.
+
+Physiologically, this suggests a stress-related shift toward greater sympathetic activation. During stress, the body prepares for increased cognitive and emotional demand by accelerating cardiovascular activity. As a result, heartbeats occur closer together, producing shorter NN intervals and higher heart rate.
+
+This plot is important because it confirms the heart rate finding from the opposite perspective: heart rate increases because the interval between beats decreases. The paired decrease in NN interval therefore strengthens the inference that stress produces a clear cardiac acceleration response.
+
+Takeaway: Stress shortens the time between heartbeats, reflecting faster cardiac activity during the stress condition.
 
 ---
 
 ## SDNN Plot
 
-The SDNN plot shows mixed subject-level changes between baseline and stress.
+<img width="1766" height="1464" alt="sdnn_ms_baseline_vs_stress" src="https://github.com/user-attachments/assets/e9f2c5a0-2268-4047-ad0c-6dfcf7e54801" />
 
-Some subjects show a decrease, while others show little change or an increase. SDNN reflects overall variability in normal-to-normal heartbeat intervals. Because the direction of change is not consistent across subjects, this plot does not show a clear stress-related pattern.
+The SDNN paired plot shows mixed subject-level changes between baseline and stress. Unlike mean heart rate and mean NN interval, the lines do not move in one consistent direction across participants. Some subjects show a decrease in SDNN during stress, while others show little change or even an increase.
 
-Takeaway: SDNN does not show a consistent stress effect in this notebook.
+SDNN represents the overall variability of normal-to-normal heartbeat intervals. A lower SDNN is often interpreted as reduced overall HRV, which may reflect decreased autonomic flexibility during stress. However, because the responses in this plot are inconsistent across subjects, the evidence for a clear stress-related SDNN reduction is weak in this notebook.
 
+This mixed pattern suggests that SDNN may be more sensitive to individual differences, signal quality, window length, or artifact correction than the simpler heart rate and NN interval measures. It may also indicate that the stress response is not equally expressed in overall HRV variability for all subjects. Therefore, SDNN should be interpreted cautiously rather than treated as a strong standalone marker of stress in this analysis.
+
+Takeaway: SDNN does not show a consistent stress effect in this notebook, suggesting that overall HRV variability is less clearly separated between baseline and stress than heart rate-based measures.
 ---
 
 ## RMSSD Plot
 
-The RMSSD plot shows variable responses across subjects.
+<img width="1766" height="1464" alt="rmssd_ms_baseline_vs_stress" src="https://github.com/user-attachments/assets/db89ed08-4b4e-483a-ae19-142940feb174" />
 
-Some subjects show lower RMSSD during stress, while others remain similar or increase. RMSSD reflects short-term heart rate variability and is commonly associated with parasympathetic regulation.
+The RMSSD paired plot shows **variable subject-level responses** between baseline and stress. Some subjects show a reduction in RMSSD during stress, while others remain relatively unchanged or show an increase. This means that the direction of change is not uniform across participants.
 
-Although stress may reduce parasympathetic activity, the pattern here is not consistent enough across subjects to support a reliable decrease.
+RMSSD reflects short-term beat-to-beat variability and is commonly interpreted as an index of parasympathetic, or vagal, regulation. A decrease in RMSSD during stress would normally suggest reduced vagal control and lower short-term HRV. However, in this analysis, the paired lines do not show a consistent downward pattern across subjects.
 
-Takeaway: RMSSD does not show a statistically reliable stress-related decrease in this analysis.
+This variability suggests that RMSSD may not be a strong standalone discriminator of stress in this notebook. The mixed response could reflect individual differences in stress reactivity, differences in signal quality, artifact influence, or the sensitivity of RMSSD to short analysis windows. Although the physiological expectation is that stress may reduce parasympathetic activity, the observed pattern is not consistent enough to support a reliable stress-related decrease.
+
+Therefore, RMSSD should be interpreted cautiously in this dataset. Rather than providing strong evidence of stress-related HRV suppression, it suggests that short-term parasympathetic changes may vary across individuals or may require cleaner signals, longer windows, or additional features for clearer separation.
+
+**Takeaway:** RMSSD does not show a statistically reliable stress-related decrease in this analysis, indicating that short-term HRV is not consistently reduced during stress across subjects.
 
 ---
 
 ## pNN50 Plot
 
-The pNN50 plot shows that many subjects have lower pNN50 values during stress compared with baseline, although not all subjects follow this pattern.
+<img width="1766" height="1464" alt="pnn50_pct_baseline_vs_stress" src="https://github.com/user-attachments/assets/4e4d399b-660e-4c2d-be44-cb2430fea0a1" />
 
-pNN50 measures the percentage of adjacent NN intervals differing by more than 50 ms. Lower pNN50 values suggest reduced beat-to-beat variability, which may reflect reduced parasympathetic activity during stress.
 
-However, because the decrease is not consistent across all subjects and the Wilcoxon p-value is borderline, this should be interpreted as a possible reduction rather than a strong confirmed effect.
+The pNN50 paired plot shows that many subjects have **lower pNN50 values during stress** compared with baseline, although the pattern is not universal across all participants. Several paired lines move downward from baseline to stress, suggesting that stress may reduce the frequency of large beat-to-beat changes in NN intervals.
 
-Takeaway: pNN50 shows a likely stress-related reduction, but the evidence is borderline.
+pNN50 measures the percentage of adjacent NN intervals that differ by more than 50 ms. Higher pNN50 values generally indicate greater short-term heartbeat variability, while lower values suggest more regular and less variable heartbeat timing. Therefore, a reduction in pNN50 during stress can be interpreted as a possible sign of reduced parasympathetic, or vagal, regulation.
+
+Compared with SDNN and RMSSD, the pNN50 plot appears to show a more visible stress-related decrease for several subjects. However, the effect is not fully consistent. Some participants show little change or do not follow the expected downward trend. In addition, the Wilcoxon p-value is borderline, meaning the statistical evidence is close to significance but not strong enough to confirm a reliable group-level effect with high confidence.
+
+This suggests that pNN50 may capture a **possible stress-related reduction in short-term HRV**, but the result should be interpreted cautiously. The finding supports the project hypothesis in a weak-to-moderate way, indicating that stress may reduce beat-to-beat variability, but the evidence is not as robust as the heart rate and mean NN interval results.
+
+**Takeaway:** pNN50 shows a likely stress-related reduction, but the evidence is borderline rather than strongly confirmed.
+---
+
+
+
+## Raw vs Filtered ECG Plot
+
+<img width="3567" height="1844" alt="S2_stress_raw_vs_filtered" src="https://github.com/user-attachments/assets/c628fee8-fe5d-4502-87ee-844dfd4e8f6a" />
+
+
+This figure compares the **raw ECG** and **filtered ECG** signal for subject **S2 during the stress condition**. The top panel shows the original ECG waveform before filtering, while the bottom panel shows the same segment after filtering has been applied.
+
+In the raw ECG plot, the main cardiac peaks are visible, but the signal also contains baseline fluctuation and smaller noise components. These unwanted variations can make the ECG less stable and may interfere with accurate R-peak detection. Since HRV analysis depends on precise timing between consecutive R-peaks, even small distortions in the ECG signal can affect the reliability of the extracted NN intervals.
+
+After filtering, the ECG waveform appears cleaner and more centered around the baseline. The sharp R-peaks remain clearly visible, while some slower drift and background noise are reduced. This suggests that the filtering step improves signal quality without removing the key cardiac information needed for heartbeat detection.
+
+The comparison is important because it visually demonstrates that preprocessing is not simply a technical step; it directly supports the physiological inference made later in the analysis. A cleaner ECG signal allows more reliable R-peak detection, which leads to more accurate HRV features. Therefore, this plot provides evidence that the pipeline is preparing the ECG signal appropriately before extracting stress-related cardiac measures.
+
+**Takeaway:** Filtering improves ECG signal quality by reducing noise and baseline fluctuation while preserving the R-peaks needed for HRV analysis.
 
 ---
 
 ## Binary Cross-Entropy Loss Plot
 
-The binary cross-entropy loss plot shows model loss across training epochs.
 
-The x-axis represents epoch, and the y-axis represents loss. The curve decreases smoothly during training, indicating that the logistic-regression model is learning from the HRV features.
+The binary cross-entropy loss plot shows how the logistic-regression model’s error changes across training epochs. The x-axis represents the training epoch, while the y-axis represents the loss value. Since binary cross-entropy measures the difference between the predicted class probabilities and the true baseline/stress labels, lower loss indicates that the model is making more accurate probability estimates over time.
 
-A smooth decrease in loss suggests that optimization is numerically stable. There is no clear evidence of unstable training, divergence, or strong oscillation.
+The curve decreases smoothly as training progresses, suggesting that the model is successfully learning patterns from the extracted HRV features. In this context, the decreasing loss implies that the HRV feature set contains some information that helps the model distinguish between baseline and stress samples.
 
-Takeaway: The logistic-regression model is learning, and training is numerically stable.
+The smooth shape of the curve is also important from an optimization perspective. There is no clear sign of numerical instability, divergence, or strong oscillation. This indicates that the learning rate and optimization process are reasonably stable for this simple logistic-regression setup.
+
+However, a decreasing training loss alone does not prove that the model generalizes well to unseen data. It mainly shows that the model can fit the training data in a stable way. Therefore, the loss plot should be interpreted together with validation performance, accuracy, confusion matrix, or other evaluation metrics.
+
+**Takeaway:** The logistic-regression model is learning from the HRV features, and the training process appears numerically stable.
+
 
 ---
 
