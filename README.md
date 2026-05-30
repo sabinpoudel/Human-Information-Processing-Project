@@ -375,11 +375,11 @@ From an inferential perspective, this plot supports the idea that ECG-derived HR
 
 ---
 
-## JAX Learned Latent Stress Score
+##  Latent Stress Score
 
 <img width="1767" height="1464" alt="jax_latent_stress_score" src="https://github.com/user-attachments/assets/0df24366-777d-42e2-8a68-ea6117e380b4" />
 
-This plot shows the predicted stress probability produced by the JAX logistic-regression model for baseline and stress samples. The y-axis represents the model’s learned stress score, where values closer to 0 indicate a stronger baseline-like prediction and values closer to 1 indicate a stronger stress-like prediction.
+This plot shows the predicted stress probability produced by the logistic-regression model for baseline and stress samples. The y-axis represents the model’s learned stress score, where values closer to 0 indicate a stronger baseline-like prediction and values closer to 1 indicate a stronger stress-like prediction.
 
 The baseline samples are mostly concentrated at low predicted stress probabilities, with the median near the lower part of the scale. This suggests that the model generally assigns baseline windows a low likelihood of being stress. In contrast, the stress samples are shifted upward, with many points and the boxplot median located at much higher predicted probabilities. This indicates that the model has learned a meaningful separation between the two conditions.
 
