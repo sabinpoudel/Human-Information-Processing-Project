@@ -3,10 +3,10 @@ especially ECG data, and extracting heart rate variability features using the WE
 used to study human states such as stress, relaxation, and emotional response.The work is implemented in a Jupyter Notebook and includes data processing, signal analysis,
 feature extraction, and visualization. 
 Repository Contents
-Human-Information-Processing-Project/
-│
-├── HIP.ipynb          # Main Jupyter Notebook for the assignment
-├── README.md         # Project description and instructions figures are included, the pipelines model design of the neuropype
+
+&rarr Human-Information-Processing-Project/
+&rarr HIP.ipynb   💡 Main Jupyter Notebook for the assignment
+&rarr README.md      💡 Project description and instructions figures are included, the pipelines model design of the neuropype
 
 
 This project is based on the WESAD dataset, which contains wearable sensor data collected for stress and affect detection. 
