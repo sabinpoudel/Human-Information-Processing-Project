@@ -53,9 +53,9 @@ By analyzing ECG-derived HRV, this project aims to infer how the body’s regula
 
 This project developed a complete ECG–HRV stress-analysis workflow across two complementary environments: a Jupyter-based analytical pipeline and a NeuroPype-based signal-processing implementation. In the Jupyter notebook, chest ECG data from the WESAD dataset were extracted and reorganized into condition-specific CSV files(Please check HIP.ipynb file for it), allowing baseline and stress recordings to be processed separately. The ECG signals were then filtered, visually inspected for quality, and analyzed through R-peak detection. From these detected heartbeat intervals, HRV features were computed over defined time windows, followed by group-level statistical analysis and the implementation of a simple JAX-based classifier.
 
-This workflow supports the inference that stress-related changes in autonomic regulation can be observed not only in raw ECG morphology but also in the variability patterns derived from consecutive R-peaks. By comparing HRV windows across experimental conditions, the pipeline provides a structured way to examine whether baseline and stress states produce separable physiological signatures.
+This workflow supports the inference that stress-related changes in autonomic regulation can be observed  in raw ECG morphology and also in the variability patterns derived from consecutive R-peaks. By comparing HRV windows across experimental conditions, the pipeline provides a structured way to examine whether baseline and stress states produce separable physiological signatures.
 
-The NeuroPype implementation was designed to mirror the same logic in a more modular signal-processing environment. An important implementation insight concerns frequency-domain visualization. SpectrumPlot does not operate directly on raw ECG or HRV time-series data; it requires frequency-axis spectral input. Therefore, it must be preceded by a spectral estimation node such as Spectrogram or WelchSpectrum. Similarly, HeartRate and HeartRateVariability nodes must receive the output stream from RDetection, specifically the stream ending in -peaks, because HR and HRV calculations depend on detected R-peak timing rather than the raw ECG waveform itself.
+The NeuroPype implementation was designed to mirror the same logic in a more modular signal-processing environment. An important implementation insight concerns frequency-domain visualization. SpectrumPlot does not operate directly on raw ECG or HRV time-series data; it requires frequency-axis spectral input. Therefore, it must be preceded by a spectral estimation node such as Spectrogram or WelchSpectrum. Similarly, HeartRate and HeartRateVariability nodes must receive the output stream from RDetection, specifically the stream ending in peaks, because HR and HRV calculations depend on detected R-peak timing rather than the raw ECG waveform itself.
 
 Overall, the project demonstrates both the analytical and practical requirements of ECG-based HRV stress analysis. The Jupyter workflow provides transparent feature extraction, statistical comparison, and classification, while the NeuroPype workflow translates the same reasoning into a reusable signal-processing pipeline. Together, these implementations show how ECG-derived R-peak timing can be transformed into interpretable HRV measures for distinguishing physiological responses during baseline and stress-related information processing.
 
@@ -118,7 +118,7 @@ The main objectives of this assignment are:
 <img width="3600" height="1200" alt="S2_stress_raw_ecg" src="https://github.com/user-attachments/assets/7af9b1fd-6bf2-41f7-8525-a136fedfde95" />
 
 
-This raw ECG visual inspection plot shows the unfiltered ECG signal for subject **S2 during the stress condition**. The x-axis represents time in seconds, while the y-axis represents ECG amplitude. The repeated sharp upward deflections correspond to cardiac R-peaks, which are the main reference points used later for heartbeat interval and HRV calculation.
+This raw ECG visual inspection plot shows the unfiltered ECG signal for subject **S2 during the stress condition**. The x-axis represents time in seconds, while the y-axis represents ECG amplitude. The repeated sharp upward deflections correspond to cardiac R-peaks, which are the main reference points used for heartbeat interval and HRV calculation.
 
 Visual inspection is an important early quality-control step because it allows the signal to be evaluated before automated preprocessing and feature extraction. In this segment, the R-peaks are clearly visible across the recording, suggesting that the ECG contains usable cardiac information. However, the waveform also shows baseline fluctuation, amplitude variation, and smaller irregular components between the main peaks. These features may reflect movement, muscle activity, electrode contact changes, or other noise sources during the stress condition.
 
@@ -157,11 +157,25 @@ In the raw ECG plot, the main cardiac peaks are visible, but the signal also con
 
 After filtering, the ECG waveform appears cleaner and more centered around the baseline. The sharp R-peaks remain clearly visible, while some slower drift and background noise are reduced. This suggests that the filtering step improves signal quality without removing the key cardiac information needed for heartbeat detection.
 
-The comparison is important because it visually demonstrates that preprocessing is not simply a technical step; it directly supports the physiological inference made later in the analysis. A cleaner ECG signal allows more reliable R-peak detection, which leads to more accurate HRV features. Therefore, this plot provides evidence that the pipeline is preparing the ECG signal appropriately before extracting stress-related cardiac measures.
+ Therefore, this plot provides evidence that the pipeline is preparing the ECG signal appropriately before extracting stress-related cardiac measures.
 
 **Takeaway:** Filtering improves ECG signal quality by reducing noise and baseline fluctuation while preserving the R-peaks needed for HRV analysis.
 
 ---
+
+
+## R-Peak Detection Check
+
+This R-peak detection check shows the cleaned ECG signal with the detected R-peaks marked as circular points. The continuous waveform represents the cleaned ECG, while each marker identifies a heartbeat location selected by the detection algorithm.
+
+This plot is important because R-peak detection is the foundation of the entire HRV workflow. HRV features are not calculated directly from the ECG waveform itself; they are derived from the timing differences between consecutive detected R-peaks. Therefore, the quality of R-peak detection directly determines the reliability of the NN intervals and all later HRV metrics.
+
+In this segment, the detected markers align closely with the sharp upward deflections of the ECG waveform. This suggests that the algorithm is identifying the main cardiac peaks rather than random noise or smaller waveform fluctuations. The spacing between detected peaks also appears physiologically plausible, which supports confidence that the resulting NN interval sequence reflects real heartbeat timing.
+
+This figure provides a visual quality-control checkpoint before HRV extraction. If peaks were missed, falsely added, or placed at incorrect locations, the HRV results could be distorted. Here, the alignment between markers and ECG peaks indicates that the cleaned signal is suitable for interval calculation and downstream stress analysis.
+
+**Takeaway:** The R-peak detection appears reliable in this ECG segment, supporting accurate NN interval calculation and trustworthy HRV feature extraction.
+
 
 
 ## PSD Before and After Filtering Plot
@@ -239,6 +253,7 @@ SDNN represents the overall variability of normal-to-normal heartbeat intervals.
 This mixed pattern suggests that SDNN may be more sensitive to individual differences, signal quality, window length, or artifact correction than the simpler heart rate and NN interval measures. It may also indicate that the stress response is not equally expressed in overall HRV variability for all subjects. Therefore, SDNN should be interpreted cautiously rather than treated as a strong standalone marker of stress in this analysis.
 
 Takeaway: SDNN does not show a consistent stress effect in this notebook, suggesting that overall HRV variability is less clearly separated between baseline and stress than heart rate-based measures.
+
 ---
 
 ## RMSSD Plot
@@ -271,79 +286,106 @@ Compared with SDNN and RMSSD, the pNN50 plot appears to show a more visible stre
 This suggests that pNN50 may capture a **possible stress-related reduction in short-term HRV**, but the result should be interpreted cautiously. The finding supports the project hypothesis in a weak-to-moderate way, indicating that stress may reduce beat-to-beat variability, but the evidence is not as robust as the heart rate and mean NN interval results.
 
 **Takeaway:** pNN50 shows a likely stress-related reduction, but the evidence is borderline rather than strongly confirmed.
----
-
-
-
-## Binary Cross-Entropy Loss Plot
-
-
-The binary cross-entropy loss plot shows how the logistic-regression model’s error changes across training epochs. The x-axis represents the training epoch, while the y-axis represents the loss value. Since binary cross-entropy measures the difference between the predicted class probabilities and the true baseline/stress labels, lower loss indicates that the model is making more accurate probability estimates over time.
-
-The curve decreases smoothly as training progresses, suggesting that the model is successfully learning patterns from the extracted HRV features. In this context, the decreasing loss implies that the HRV feature set contains some information that helps the model distinguish between baseline and stress samples.
-
-The smooth shape of the curve is also important from an optimization perspective. There is no clear sign of numerical instability, divergence, or strong oscillation. This indicates that the learning rate and optimization process are reasonably stable for this simple logistic-regression setup.
-
-However, a decreasing training loss alone does not prove that the model generalizes well to unseen data. It mainly shows that the model can fit the training data in a stable way. Therefore, the loss plot should be interpreted together with validation performance, accuracy, confusion matrix, or other evaluation metrics.
-
-**Takeaway:** The logistic-regression model is learning from the HRV features, and the training process appears numerically stable.
-
 
 ---
 
-## PCA Latent-Space Plot
 
-The PCA latent-space plot projects the HRV features into two principal components.
 
-The x-axis represents the first principal component, and the y-axis represents the second principal component. The colors represent baseline and stress conditions.
+## Logistic Regression Training Loss Plot
 
-The first principal component explains 75.7% of the variance, while the second principal component explains 15.5%. Together, these two components capture most of the variation in the HRV feature set.
+<img width="2367" height="1164" alt="jax_training_loss" src="https://github.com/user-attachments/assets/5d5b085a-b6a3-4949-a7c6-aeedd02101d4" />
 
-The plot shows partial separation between baseline and stress, suggesting that HRV features contain condition-related structure. However, overlap remains between the two groups, meaning that baseline and stress are not perfectly separable using these features alone.
 
-Takeaway: HRV features contain stress-related structure, but baseline and stress still overlap.
 
----
+This plot shows the binary cross-entropy loss of the logistic-regression model across training epochs. The x-axis represents the number of training epochs, while the y-axis represents the model’s prediction error. Because binary cross-entropy measures how far the predicted probabilities are from the true baseline and stress labels, a lower value indicates better model fit.
 
-## t-SNE Latent-Space Plot
+The loss decreases sharply during the early epochs, showing that the model quickly learns an initial separation pattern from the HRV features. After this rapid drop, the curve continues to decline more gradually and begins to flatten. This suggests that the model is still improving, but the largest learning gains occur early in training.
 
-The t-SNE latent-space plot shows a nonlinear embedding of the HRV windows.
+The smooth downward shape of the curve indicates stable optimization. There is no visible sign of divergence, sudden spikes, or strong oscillation, which means the learning process is numerically well behaved. This supports the interpretation that the selected learning rate and logistic-regression setup are appropriate for the feature set.
 
-The axes are arbitrary t-SNE dimensions and do not have direct physiological meaning. Points that are close together have similar HRV feature profiles. Colors indicate baseline and stress conditions.
+From an inference perspective, the decreasing loss suggests that the extracted HRV features contain information that helps distinguish baseline from stress samples. However, the training loss alone only confirms that the model is fitting the training data. It should be interpreted together with validation accuracy, test performance, or classification metrics before making a strong claim about generalization.
 
-Some local regions appear enriched for one condition, suggesting that certain HRV patterns are more common during either baseline or stress.
+**Takeaway:** The logistic-regression model learns a stable separation pattern from the HRV features, with the strongest improvement occurring early in training.
 
-However, t-SNE should not be overinterpreted because it can create apparent clusters depending on parameter settings and local neighborhood structure.
 
-Takeaway: Some local clusters are condition-enriched, but the plot should be interpreted cautiously.
 
 ---
 
-## UMAP Latent-Space Plot
+## PCA Latent-Space Visualization of HRV Features
 
-The UMAP latent-space plot shows another nonlinear embedding of the HRV feature space.
+<img width="2067" height="1764" alt="pca_hrv_latent_space" src="https://github.com/user-attachments/assets/07f52c1d-8c42-43ac-8508-a0128885f9b3" />
 
-The x-axis represents UMAP dimension 1, and the y-axis represents UMAP dimension 2. These axes are embedding coordinates and should not be interpreted as direct physiological measurements.
 
-The plot shows some separation between baseline and stress points, suggesting that HRV features contain information related to stress condition. However, overlap remains between the two groups.
+This PCA latent-space plot visualizes the HRV feature windows in a reduced two-dimensional space. Each point represents one HRV feature window, with blue points corresponding to baseline samples and orange points corresponding to stress samples. The purpose of this plot is to examine whether the extracted HRV features form different patterns for baseline and stress conditions.
 
-This overlap indicates that HRV features do not perfectly distinguish stress from baseline, likely because of individual differences and physiological variability.
+The plot shows a visible separation tendency between the two conditions. Baseline samples are more concentrated in the lower region of the space, especially around negative values on Dimension 2, while stress samples are more widely distributed and extend strongly into higher values on Dimension 2. This suggests that stress-related HRV windows occupy a different region of the feature space compared with baseline windows.
 
-Takeaway: Some condition separation exists, but HRV features do not perfectly separate stress from baseline.
+At the same time, the two classes are not perfectly separated. There is noticeable overlap near the center of the plot, where both baseline and stress samples appear together. This indicates that HRV features contain stress-relevant information, but the distinction is not absolute. Some stress windows resemble baseline physiology, and some baseline windows fall near stress-like regions. This overlap may reflect individual variability, transitional physiological states, artifact influence, or limitations of using only time-domain HRV features.
+
+The upward spread of the stress class is especially informative. It suggests that stress does not simply shift all samples in one uniform direction; instead, it increases variability in the feature representation. In physiological terms, this may indicate that stress responses differ across subjects or across time windows, with some windows showing stronger autonomic changes than others.
+
+Because PCA is a linear dimensionality-reduction method, this figure should be interpreted as an exploratory visualization rather than definitive classification evidence. However, the partial separation between baseline and stress supports the broader inference that ECG-derived HRV features contain meaningful information about stress-related autonomic changes.
+
+**Takeaway:** PCA shows partial separation between baseline and stress HRV windows, suggesting that the extracted HRV features contain stress-relevant structure, although the overlap indicates that the classes are not perfectly separable using these features alone.
+
 
 ---
 
-## JAX Latent Stress Score Plot
 
-The JAX latent stress score plot shows predicted stress probability for baseline and stress windows.
+## t-SNE Latent-Space Visualization of HRV Features
 
-The x-axis represents condition, and the y-axis represents predicted stress probability. The boxplot summarizes the distribution of predicted probabilities, while the jittered points show individual windows.
+<img width="2067" height="1764" alt="tsne_hrv_latent_space" src="https://github.com/user-attachments/assets/1d1c2b91-4895-4004-9d60-d947125ea844" />
 
-Stress windows generally receive higher predicted stress probabilities than baseline windows. This suggests that the model learned a stress-related signal from the HRV features.
 
-However, there is overlap between the baseline and stress distributions. Some baseline windows receive relatively high stress probabilities, and some stress windows receive lower probabilities.
+This t-SNE latent-space plot shows the HRV feature windows projected into a two-dimensional nonlinear space. Each point represents one HRV window, with blue points indicating baseline samples and orange points indicating stress samples. Unlike PCA, which captures linear structure, t-SNE is designed to emphasize local neighborhood relationships, meaning points that appear close together have similar HRV feature patterns.
 
-Takeaway: Stress windows generally receive higher stress probabilities, but the classifier is not perfect.
+The plot shows several visible clusters and curved bands, suggesting that the HRV windows contain structured physiological patterns rather than random scatter. Some regions are dominated by baseline samples, especially in the lower and right-side areas, while several stress-dominant groups appear in the upper-left and central regions. This indicates that stress and baseline windows show partially different local feature relationships.
+
+However, the separation is not complete. There are multiple overlapping regions where baseline and stress samples appear close together. This overlap suggests that some stress windows resemble baseline-like physiology, while some baseline windows share features with stress-like windows. Such overlap may reflect individual variability, transitional autonomic states, window-level noise, or limitations of using HRV features alone.
+
+Compared with the PCA visualization, t-SNE reveals more local clustering and nonlinear structure. This suggests that the baseline-versus-stress distinction may not be fully captured by a simple linear projection, but may exist more clearly in local or nonlinear patterns within the HRV feature space.
+
+From an inference perspective, this plot supports the idea that ECG-derived HRV features carry stress-relevant information, but also shows that stress classification is not perfectly separable. Therefore, the model may learn useful patterns, but performance will likely depend on feature quality, artifact control, subject variability, and the chosen classifier.
+
+**Takeaway:** t-SNE shows meaningful local clustering of HRV windows, with partial baseline–stress separation, but the overlap indicates that stress detection from HRV is informative rather than perfectly distinct.
+
+
+---
+
+## UMAP Latent-Space Visualization of HRV Features
+
+<img width="2067" height="1764" alt="umap_hrv_latent_space" src="https://github.com/user-attachments/assets/4b785d49-c446-40a1-80fa-e3adc57a4d3f" />
+
+
+This UMAP latent-space plot shows the HRV feature windows projected into a two-dimensional nonlinear space. Each point represents one HRV window, with blue points indicating baseline samples and orange points indicating stress samples. UMAP is useful here because it preserves both local neighborhood structure and broader manifold relationships, helping reveal whether baseline and stress windows occupy different regions of the HRV feature space.
+
+The plot shows a clearer spatial organization than a simple scatter of random points. Baseline samples are concentrated mainly on the left and lower-central regions, while stress samples extend more strongly toward the right side of the plot. The orange stress-dominant clusters on the right suggest that some stress windows have HRV patterns that are distinct from most baseline windows.
+
+At the same time, the separation is not complete. Several baseline and stress points overlap near the center-left region, indicating that some windows share similar HRV characteristics across conditions. This overlap suggests that stress-related physiology is not uniform across all subjects or time windows. Some stress windows may resemble baseline states, while some baseline windows may contain higher arousal or noisy segments.
+
+Compared with PCA, the UMAP visualization reveals more nonlinear structure in the data. The curved clusters and separated branches suggest that stress-related differences may not lie along a single linear axis. Instead, the HRV features appear to form a more complex manifold where condition-related patterns emerge in specific regions of the space.
+
+From an inferential perspective, this plot supports the idea that ECG-derived HRV features contain stress-relevant information. The presence of stress-dominant regions suggests that the model has meaningful structure to learn from. However, because the classes still overlap, HRV alone may provide partial rather than perfect separation between baseline and stress.
+
+**Takeaway:** UMAP shows meaningful nonlinear structure in the HRV feature space, with stress samples forming distinct regions but still overlapping with baseline in some areas.
+
+
+---
+
+## JAX Learned Latent Stress Score
+
+<img width="1767" height="1464" alt="jax_latent_stress_score" src="https://github.com/user-attachments/assets/0df24366-777d-42e2-8a68-ea6117e380b4" />
+
+This plot shows the predicted stress probability produced by the JAX logistic-regression model for baseline and stress samples. The y-axis represents the model’s learned stress score, where values closer to 0 indicate a stronger baseline-like prediction and values closer to 1 indicate a stronger stress-like prediction.
+
+The baseline samples are mostly concentrated at low predicted stress probabilities, with the median near the lower part of the scale. This suggests that the model generally assigns baseline windows a low likelihood of being stress. In contrast, the stress samples are shifted upward, with many points and the boxplot median located at much higher predicted probabilities. This indicates that the model has learned a meaningful separation between the two conditions.
+
+The spread of the points is also important. Baseline contains some higher predicted probabilities, and stress contains some lower predicted probabilities, showing that the separation is not perfect. These overlapping predictions may reflect subject-level variability, noisy HRV windows, artifact effects, or physiological periods where stress and baseline features are similar. However, the overall upward shift in the stress distribution suggests that the HRV features contain stress-relevant information.
+
+From an inference perspective, this figure is stronger than the training loss plot because it shows how the learned model scores each condition after training. The clear difference between the baseline and stress distributions indicates that the classifier is not merely optimizing numerically; it is learning a condition-related pattern in the HRV feature space.
+
+**Takeaway:** The JAX logistic-regression model assigns higher stress probabilities to stress samples than to baseline samples, suggesting that the extracted HRV features contain meaningful stress-related information.
+
 
 ---
 
