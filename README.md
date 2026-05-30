@@ -129,11 +129,6 @@ This figure helps justify the preprocessing pipeline used in the notebook. It sh
 **Takeaway:** The raw ECG contains clear heartbeat structure, but visible drift and noise justify filtering and artifact control before HRV analysis.
 
 
-
-
-
-<img width="1766" height="1464" alt="mean_hr_bpm_baseline_vs_stress" src="https://github.com/user-attachments/assets/b52afdb0-8838-4421-b39f-378e1dacc442" />
-
 ## Artifact-Marked ECG Plot
 
 <img width="3567" height="1164" alt="S2_stress_marked_artifacts" src="https://github.com/user-attachments/assets/88acde0b-7200-454d-aa12-5964d99a638e" />
@@ -192,7 +187,8 @@ The notch-like reduction around the mid-frequency range also suggests targeted a
 
 ## HRV Paired Plots
 
-The HRV paired plots above compare each subject’s baseline and stress values across selected HRV metrics. In these plots, each thin line represents one participant and traces that participant’s physiological shift from the baseline condition to the stress condition.
+
+The HRV paired plots compare each subject’s baseline and stress values across selected HRV metrics. In these plots, each thin line represents one participant and traces that participant’s physiological shift from the baseline condition to the stress condition.
 
 This visualization is especially informative because it emphasizes within-subject change rather than relying only on group-level averages. Since HRV can vary substantially between individuals, paired plots help control for individual differences by showing how each participant changes relative to their own baseline.
 
@@ -278,23 +274,6 @@ This suggests that pNN50 may capture a **possible stress-related reduction in sh
 ---
 
 
-
-## Raw vs Filtered ECG Plot
-
-<img width="3567" height="1844" alt="S2_stress_raw_vs_filtered" src="https://github.com/user-attachments/assets/c628fee8-fe5d-4502-87ee-844dfd4e8f6a" />
-
-
-This figure compares the **raw ECG** and **filtered ECG** signal for subject **S2 during the stress condition**. The top panel shows the original ECG waveform before filtering, while the bottom panel shows the same segment after filtering has been applied.
-
-In the raw ECG plot, the main cardiac peaks are visible, but the signal also contains baseline fluctuation and smaller noise components. These unwanted variations can make the ECG less stable and may interfere with accurate R-peak detection. Since HRV analysis depends on precise timing between consecutive R-peaks, even small distortions in the ECG signal can affect the reliability of the extracted NN intervals.
-
-After filtering, the ECG waveform appears cleaner and more centered around the baseline. The sharp R-peaks remain clearly visible, while some slower drift and background noise are reduced. This suggests that the filtering step improves signal quality without removing the key cardiac information needed for heartbeat detection.
-
-The comparison is important because it visually demonstrates that preprocessing is not simply a technical step; it directly supports the physiological inference made later in the analysis. A cleaner ECG signal allows more reliable R-peak detection, which leads to more accurate HRV features. Therefore, this plot provides evidence that the pipeline is preparing the ECG signal appropriately before extracting stress-related cardiac measures.
-
-**Takeaway:** Filtering improves ECG signal quality by reducing noise and baseline fluctuation while preserving the R-peaks needed for HRV analysis.
-
----
 
 ## Binary Cross-Entropy Loss Plot
 
