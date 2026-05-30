@@ -355,7 +355,7 @@ From an inference perspective, this plot supports the idea that ECG-derived HRV 
 
 ---
 
-## UMAP Latent-Space Visualization of HRV Features
+## Latent-Space Visualization of HRV Features
 
 <img width="2067" height="1764" alt="umap_hrv_latent_space" src="https://github.com/user-attachments/assets/4b785d49-c446-40a1-80fa-e3adc57a4d3f" />
 
