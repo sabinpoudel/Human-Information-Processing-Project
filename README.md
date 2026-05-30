@@ -4,9 +4,8 @@ used to study human states such as stress, relaxation, and emotional response.Th
 feature extraction, and visualization. 
 Repository Contents
 
----
-→ Human-Information-Processing-Project 
 → HIP.ipynb   💡 Main Jupyter Notebook for the assignment
+
 → README.md      💡 Project description and instructions figures are included, the pipelines model design of the neuropype
 
 ---
